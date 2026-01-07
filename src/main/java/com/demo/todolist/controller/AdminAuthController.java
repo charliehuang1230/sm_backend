@@ -5,7 +5,6 @@ import com.demo.todolist.dto.AdminLoginResponse;
 import com.demo.todolist.service.AdminAuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
