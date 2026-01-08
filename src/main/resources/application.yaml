@@ -1,4 +1,7 @@
-spring:
+﻿spring:
+  sql:
+    init:
+      mode: never
   application:
     name: todolist
   datasource:
@@ -17,3 +20,9 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+
+dynamic:
+  datasource:
+    ttl-minutes: 30
+
+
