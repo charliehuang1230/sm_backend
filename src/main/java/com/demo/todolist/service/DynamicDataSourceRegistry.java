@@ -43,13 +43,18 @@ public class DynamicDataSourceRegistry {
 
     public DynamicConnectResponse connect(DynamicConnectRequest request) {
         String connectionId = UUID.randomUUID().toString();
-        HikariDataSource dataSource = buildDataSource(connectionId, request);
+        HikariDataSource dataSource;
+        try {
+            dataSource = buildDataSource(connectionId, request);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid datasource config: " + ex.getMessage(), ex);
+        }
 
         try (Connection ignored = dataSource.getConnection()) {
             // validate connection
         } catch (Exception ex) {
             dataSource.close();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "database connection failed", ex);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "database connection failed: " + ex.getMessage(), ex);
         }
 
         Instant now = Instant.now();

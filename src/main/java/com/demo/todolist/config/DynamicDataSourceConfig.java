@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
@@ -25,6 +26,7 @@ public class DynamicDataSourceConfig {
     }
 
     @Bean(name = "dataSource")
+    @Primary
     public DynamicRoutingDataSource dynamicRoutingDataSource(@Qualifier("defaultDataSource") DataSource defaultDataSource) {
         DynamicRoutingDataSource routingDataSource = new DynamicRoutingDataSource();
         Map<Object, Object> targets = new HashMap<>();
