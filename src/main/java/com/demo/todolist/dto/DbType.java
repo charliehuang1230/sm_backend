@@ -2,5 +2,7 @@ package com.demo.todolist.dto;
 
 public enum DbType {
     POSTGRES,
-    ORACLE
+    ORACLE,
+    MYSQL,
+    MSSQL
 }

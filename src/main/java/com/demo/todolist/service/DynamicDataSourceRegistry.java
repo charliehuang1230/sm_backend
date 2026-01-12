@@ -128,6 +128,8 @@ public class DynamicDataSourceRegistry {
         return switch (dbType) {
             case POSTGRES -> "jdbc:postgresql://" + host + ":" + port + "/" + database;
             case ORACLE -> "jdbc:oracle:thin:@" + host + ":" + port + ":" + database;
+            case MYSQL -> "jdbc:mysql://" + host + ":" + port + "/" + database;
+            case MSSQL -> "jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + database;
         };
     }
 
@@ -135,6 +137,8 @@ public class DynamicDataSourceRegistry {
         return switch (dbType) {
             case POSTGRES -> "org.postgresql.Driver";
             case ORACLE -> "oracle.jdbc.OracleDriver";
+            case MYSQL -> "com.mysql.cj.jdbc.Driver";
+            case MSSQL -> "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         };
     }
 
