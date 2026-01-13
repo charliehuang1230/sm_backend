@@ -4,10 +4,16 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-public record DynamicOrderItemQueryRequest(
+import java.math.BigDecimal;
+
+public record CustomDynamicProductQueryRequest(
         @NotBlank String connectionId,
-        Long orderId,
-        Long productId,
+        String sku,
+        String productName,
+        Long categoryId,
+        Boolean isActive,
+        BigDecimal minListPrice,
+        BigDecimal maxListPrice,
         @Min(1) @Max(200) Integer limit
 ) {
 }

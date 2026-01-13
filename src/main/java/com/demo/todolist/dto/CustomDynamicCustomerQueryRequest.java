@@ -6,13 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.OffsetDateTime;
 
-public record DynamicReturnQueryRequest(
+public record CustomDynamicCustomerQueryRequest(
         @NotBlank String connectionId,
-        Long orderId,
-        Long productId,
-        String returnStatus,
-        OffsetDateTime requestedAfter,
-        OffsetDateTime requestedBefore,
+        String email,
+        String fullName,
+        String country,
+        String city,
+        Boolean isVip,
+        OffsetDateTime signupAfter,
+        OffsetDateTime signupBefore,
         @Min(1) @Max(200) Integer limit
 ) {
 }

@@ -6,13 +6,13 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.OffsetDateTime;
 
-public record DynamicPaymentQueryRequest(
+public record CustomDynamicReturnQueryRequest(
         @NotBlank String connectionId,
         Long orderId,
-        String paymentMethod,
-        String paymentStatus,
-        OffsetDateTime paidAfter,
-        OffsetDateTime paidBefore,
+        Long productId,
+        String returnStatus,
+        OffsetDateTime requestedAfter,
+        OffsetDateTime requestedBefore,
         @Min(1) @Max(200) Integer limit
 ) {
 }
