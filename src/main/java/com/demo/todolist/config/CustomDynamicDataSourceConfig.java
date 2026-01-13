@@ -15,8 +15,8 @@ import java.util.Map;
 
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties(DynamicDataSourceProperties.class)
-public class DynamicDataSourceConfig {
+@EnableConfigurationProperties(CustomDynamicDataSourceProperties.class)
+public class CustomDynamicDataSourceConfig {
 
     @Bean
     public DataSource defaultDataSource(DataSourceProperties properties) {
@@ -27,10 +27,10 @@ public class DynamicDataSourceConfig {
 
     @Bean(name = "dataSource")
     @Primary
-    public DynamicRoutingDataSource dynamicRoutingDataSource(@Qualifier("defaultDataSource") DataSource defaultDataSource) {
-        DynamicRoutingDataSource routingDataSource = new DynamicRoutingDataSource();
+    public CustomDynamicRoutingDataSource dynamicRoutingDataSource(@Qualifier("defaultDataSource") DataSource defaultDataSource) {
+        CustomDynamicRoutingDataSource routingDataSource = new CustomDynamicRoutingDataSource();
         Map<Object, Object> targets = new HashMap<>();
-        targets.put(DynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
+        targets.put(CustomDynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
         routingDataSource.setTargetDataSources(targets);
         routingDataSource.setDefaultTargetDataSource(defaultDataSource);
         routingDataSource.afterPropertiesSet();

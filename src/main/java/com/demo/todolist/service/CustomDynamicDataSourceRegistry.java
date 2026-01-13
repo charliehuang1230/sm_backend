@@ -1,11 +1,11 @@
 package com.demo.todolist.service;
 
-import com.demo.todolist.config.DynamicDataSourceContext;
-import com.demo.todolist.config.DynamicDataSourceProperties;
-import com.demo.todolist.config.DynamicRoutingDataSource;
+import com.demo.todolist.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.config.CustomDynamicDataSourceProperties;
+import com.demo.todolist.config.CustomDynamicRoutingDataSource;
 import com.demo.todolist.dto.DbType;
-import com.demo.todolist.dto.DynamicConnectRequest;
-import com.demo.todolist.dto.DynamicConnectResponse;
+import com.demo.todolist.dto.CustomDynamicConnectRequest;
+import com.demo.todolist.dto.CustomDynamicConnectResponse;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,22 +26,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class DynamicDataSourceRegistry {
+public class CustomDynamicDataSourceRegistry {
 
-    private final DynamicRoutingDataSource routingDataSource;
+    private final CustomDynamicRoutingDataSource routingDataSource;
     private final DataSource defaultDataSource;
     private final Duration ttl;
     private final Map<String, DataSourceHolder> dataSources = new ConcurrentHashMap<>();
 
-    public DynamicDataSourceRegistry(DynamicRoutingDataSource routingDataSource,
+    public CustomDynamicDataSourceRegistry(CustomDynamicRoutingDataSource routingDataSource,
                                      @Qualifier("defaultDataSource") DataSource defaultDataSource,
-                                     DynamicDataSourceProperties properties) {
+                                     CustomDynamicDataSourceProperties properties) {
         this.routingDataSource = routingDataSource;
         this.defaultDataSource = defaultDataSource;
         this.ttl = Duration.ofMinutes(properties.getTtlMinutes());
     }
 
-    public DynamicConnectResponse connect(DynamicConnectRequest request) {
+    public CustomDynamicConnectResponse connect(CustomDynamicConnectRequest request) {
         String connectionId = UUID.randomUUID().toString();
         HikariDataSource dataSource;
         try {
@@ -61,7 +61,7 @@ public class DynamicDataSourceRegistry {
         dataSources.put(connectionId, new DataSourceHolder(dataSource, now, now));
         refreshRoutingDataSources();
 
-        return new DynamicConnectResponse(connectionId, now.plus(ttl));
+        return new CustomDynamicConnectResponse(connectionId, now.plus(ttl));
     }
 
     public void touch(String connectionId) {
@@ -102,7 +102,7 @@ public class DynamicDataSourceRegistry {
 
     private void refreshRoutingDataSources() {
         Map<Object, Object> targets = new HashMap<>();
-        targets.put(DynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
+        targets.put(CustomDynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
         for (Map.Entry<String, DataSourceHolder> entry : dataSources.entrySet()) {
             targets.put(entry.getKey(), entry.getValue().getDataSource());
         }
@@ -110,7 +110,7 @@ public class DynamicDataSourceRegistry {
         routingDataSource.afterPropertiesSet();
     }
 
-    private HikariDataSource buildDataSource(String connectionId, DynamicConnectRequest request) {
+    private HikariDataSource buildDataSource(String connectionId, CustomDynamicConnectRequest request) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(buildJdbcUrl(request.dbType(), request.host(), request.port(), request.database()));
         config.setUsername(request.username());

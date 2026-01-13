@@ -2,12 +2,8 @@ package com.demo.todolist.controller;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusLanguageDriverAutoConfiguration;
-import com.demo.todolist.dto.DynamicAppUserQueryRequest;
-import com.demo.todolist.dto.DynamicCloseRequest;
-import com.demo.todolist.dto.DynamicConnectRequest;
-import com.demo.todolist.dto.DynamicConnectResponse;
-import com.demo.todolist.entity.AppUser;
-import com.demo.todolist.mapper.AppUserMapper;
+import com.demo.todolist.dto.CustomDynamicConnectRequest;
+import com.demo.todolist.dto.CustomDynamicConnectResponse;
 import com.demo.todolist.mapper.CategoryMapper;
 import com.demo.todolist.mapper.CustomerMapper;
 import com.demo.todolist.mapper.InventoryMovementMapper;
@@ -16,9 +12,8 @@ import com.demo.todolist.mapper.OrderItemMapper;
 import com.demo.todolist.mapper.PaymentMapper;
 import com.demo.todolist.mapper.ProductMapper;
 import com.demo.todolist.mapper.ReturnEntryMapper;
-import com.demo.todolist.service.DynamicAppUserService;
-import com.demo.todolist.service.DynamicCommerceService;
-import com.demo.todolist.service.DynamicDataSourceRegistry;
+import com.demo.todolist.service.CustomDynamicCommerceService;
+import com.demo.todolist.service.CustomDynamicDataSourceRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,10 +35,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {DynamicDbController.class, DynamicDbQueryController.class},
+@WebMvcTest(controllers = {CustomDynamicDbController.class, CustomDynamicDbQueryController.class},
         excludeAutoConfiguration = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
 @ImportAutoConfiguration(exclude = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
-class DynamicDbControllerTest {
+class CustomDynamicDbControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,15 +47,11 @@ class DynamicDbControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private DynamicDataSourceRegistry registry;
+    private CustomDynamicDataSourceRegistry registry;
 
     @MockBean
-    private DynamicAppUserService appUserService;
+    private CustomDynamicCommerceService commerceService;
 
-    @MockBean
-    private DynamicCommerceService commerceService;
-
-    @MockBean private AppUserMapper appUserMapper;
     @MockBean private CategoryMapper categoryMapper;
     @MockBean private CustomerMapper customerMapper;
     @MockBean private ProductMapper productMapper;
@@ -71,16 +61,16 @@ class DynamicDbControllerTest {
     @MockBean private PaymentMapper paymentMapper;
     @MockBean private ReturnEntryMapper returnEntryMapper;
 
-    private DynamicConnectResponse connectResponse;
+    private CustomDynamicConnectResponse connectResponse;
 
     @BeforeEach
     void setUp() {
-        connectResponse = new DynamicConnectResponse("conn-123", Instant.parse("2025-01-01T00:00:00Z"));
+        connectResponse = new CustomDynamicConnectResponse("conn-123", Instant.parse("2025-01-01T00:00:00Z"));
     }
 
     @Test
     void connect_shouldReturnConnectionIdAndExpiry() throws Exception {
-        when(registry.connect(org.mockito.ArgumentMatchers.any(DynamicConnectRequest.class)))
+        when(registry.connect(org.mockito.ArgumentMatchers.any(CustomDynamicConnectRequest.class)))
                 .thenReturn(connectResponse);
 
         String body = """
@@ -120,29 +110,4 @@ class DynamicDbControllerTest {
         assertThat(captor.getValue()).isEqualTo("conn-123");
     }
 
-    @Test
-    void users_shouldReturnListFromService() throws Exception {
-        AppUser user = new AppUser();
-        user.setId(1L);
-        user.setUsername("alice");
-        user.setPasswordHash("pwd");
-        user.setIsAdmin(true);
-
-        when(appUserService.queryUsers(org.mockito.ArgumentMatchers.any(DynamicAppUserQueryRequest.class)))
-                .thenReturn(List.of(user));
-
-        String body = """
-                {
-                  "connectionId": "conn-123",
-                  "username": "alice",
-                  "limit": 10
-                }
-                """;
-
-        mockMvc.perform(post("/api/db/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(user))));
-    }
 }

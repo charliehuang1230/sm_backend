@@ -2,15 +2,15 @@ package com.demo.todolist.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.demo.todolist.config.DynamicDataSourceContext;
-import com.demo.todolist.dto.DynamicCategoryQueryRequest;
-import com.demo.todolist.dto.DynamicCustomerQueryRequest;
-import com.demo.todolist.dto.DynamicInventoryMovementQueryRequest;
-import com.demo.todolist.dto.DynamicOrderItemQueryRequest;
-import com.demo.todolist.dto.DynamicOrderQueryRequest;
-import com.demo.todolist.dto.DynamicPaymentQueryRequest;
-import com.demo.todolist.dto.DynamicProductQueryRequest;
-import com.demo.todolist.dto.DynamicReturnQueryRequest;
+import com.demo.todolist.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.dto.CustomDynamicCategoryQueryRequest;
+import com.demo.todolist.dto.CustomDynamicCustomerQueryRequest;
+import com.demo.todolist.dto.CustomDynamicInventoryMovementQueryRequest;
+import com.demo.todolist.dto.CustomDynamicOrderItemQueryRequest;
+import com.demo.todolist.dto.CustomDynamicOrderQueryRequest;
+import com.demo.todolist.dto.CustomDynamicPaymentQueryRequest;
+import com.demo.todolist.dto.CustomDynamicProductQueryRequest;
+import com.demo.todolist.dto.CustomDynamicReturnQueryRequest;
 import com.demo.todolist.entity.Category;
 import com.demo.todolist.entity.Customer;
 import com.demo.todolist.entity.InventoryMovement;
@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Service
-public class DynamicCommerceService {
+public class CustomDynamicCommerceService {
 
     private static final int DEFAULT_LIMIT = 50;
 
-    private final DynamicDataSourceRegistry registry;
+    private final CustomDynamicDataSourceRegistry registry;
     private final CustomerMapper customerMapper;
     private final CategoryMapper categoryMapper;
     private final ProductMapper productMapper;
@@ -47,7 +47,7 @@ public class DynamicCommerceService {
     private final PaymentMapper paymentMapper;
     private final ReturnEntryMapper returnEntryMapper;
 
-    public DynamicCommerceService(DynamicDataSourceRegistry registry,
+    public CustomDynamicCommerceService(CustomDynamicDataSourceRegistry registry,
                                   CustomerMapper customerMapper,
                                   CategoryMapper categoryMapper,
                                   ProductMapper productMapper,
@@ -67,7 +67,7 @@ public class DynamicCommerceService {
         this.returnEntryMapper = returnEntryMapper;
     }
 
-    public List<Customer> queryCustomers(DynamicCustomerQueryRequest request) {
+    public List<Customer> queryCustomers(CustomDynamicCustomerQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<Customer> query = new LambdaQueryWrapper<>();
             if (notBlank(request.email())) {
@@ -96,7 +96,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<Category> queryCategories(DynamicCategoryQueryRequest request) {
+    public List<Category> queryCategories(CustomDynamicCategoryQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<Category> query = new LambdaQueryWrapper<>();
             if (notBlank(request.categoryName())) {
@@ -107,7 +107,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<Product> queryProducts(DynamicProductQueryRequest request) {
+    public List<Product> queryProducts(CustomDynamicProductQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<Product> query = new LambdaQueryWrapper<>();
             if (notBlank(request.sku())) {
@@ -133,7 +133,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<InventoryMovement> queryInventoryMovements(DynamicInventoryMovementQueryRequest request) {
+    public List<InventoryMovement> queryInventoryMovements(CustomDynamicInventoryMovementQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<InventoryMovement> query = new LambdaQueryWrapper<>();
             if (request.productId() != null) {
@@ -156,7 +156,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<OrderEntity> queryOrders(DynamicOrderQueryRequest request) {
+    public List<OrderEntity> queryOrders(CustomDynamicOrderQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<OrderEntity> query = new LambdaQueryWrapper<>();
             if (request.customerId() != null) {
@@ -179,7 +179,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<OrderItem> queryOrderItems(DynamicOrderItemQueryRequest request) {
+    public List<OrderItem> queryOrderItems(CustomDynamicOrderItemQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<OrderItem> query = new LambdaQueryWrapper<>();
             if (request.orderId() != null) {
@@ -193,7 +193,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<Payment> queryPayments(DynamicPaymentQueryRequest request) {
+    public List<Payment> queryPayments(CustomDynamicPaymentQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<Payment> query = new LambdaQueryWrapper<>();
             if (request.orderId() != null) {
@@ -216,7 +216,7 @@ public class DynamicCommerceService {
         });
     }
 
-    public List<ReturnEntry> queryReturns(DynamicReturnQueryRequest request) {
+    public List<ReturnEntry> queryReturns(CustomDynamicReturnQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
             LambdaQueryWrapper<ReturnEntry> query = new LambdaQueryWrapper<>();
             if (request.orderId() != null) {
@@ -242,11 +242,11 @@ public class DynamicCommerceService {
     private <T> T withConnection(String connectionId, Supplier<T> supplier) {
         registry.ensureExists(connectionId);
         registry.touch(connectionId);
-        DynamicDataSourceContext.setCurrentKey(connectionId);
+        CustomDynamicDataSourceContext.setCurrentKey(connectionId);
         try {
             return supplier.get();
         } finally {
-            DynamicDataSourceContext.clear();
+            CustomDynamicDataSourceContext.clear();
         }
     }
 
