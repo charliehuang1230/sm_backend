@@ -16,7 +16,6 @@ import com.demo.todolist.mapper.OrderItemMapper;
 import com.demo.todolist.mapper.PaymentMapper;
 import com.demo.todolist.mapper.ProductMapper;
 import com.demo.todolist.mapper.ReturnEntryMapper;
-import com.demo.todolist.controller.AdminAuthController;
 import com.demo.todolist.service.DynamicAppUserService;
 import com.demo.todolist.service.DynamicCommerceService;
 import com.demo.todolist.service.DynamicDataSourceRegistry;
@@ -30,8 +29,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -44,9 +41,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = DynamicDbController.class,
-        excludeAutoConfiguration = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class},
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = AdminAuthController.class))
+@WebMvcTest(controllers = {DynamicDbController.class, DynamicDbQueryController.class},
+        excludeAutoConfiguration = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
 @ImportAutoConfiguration(exclude = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
 class DynamicDbControllerTest {
 
@@ -65,9 +61,7 @@ class DynamicDbControllerTest {
     @MockBean
     private DynamicCommerceService commerceService;
 
-    @MockBean
-    private AppUserMapper appUserMapper;
-
+    @MockBean private AppUserMapper appUserMapper;
     @MockBean private CategoryMapper categoryMapper;
     @MockBean private CustomerMapper customerMapper;
     @MockBean private ProductMapper productMapper;
