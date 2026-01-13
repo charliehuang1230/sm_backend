@@ -1,6 +1,5 @@
 package com.demo.todolist.controller;
 
-import com.demo.todolist.dto.DynamicAppUserQueryRequest;
 import com.demo.todolist.dto.DynamicCategoryQueryRequest;
 import com.demo.todolist.dto.DynamicCustomerQueryRequest;
 import com.demo.todolist.dto.DynamicInventoryMovementQueryRequest;
@@ -9,7 +8,6 @@ import com.demo.todolist.dto.DynamicOrderQueryRequest;
 import com.demo.todolist.dto.DynamicPaymentQueryRequest;
 import com.demo.todolist.dto.DynamicProductQueryRequest;
 import com.demo.todolist.dto.DynamicReturnQueryRequest;
-import com.demo.todolist.entity.AppUser;
 import com.demo.todolist.entity.Category;
 import com.demo.todolist.entity.Customer;
 import com.demo.todolist.entity.InventoryMovement;
@@ -18,7 +16,6 @@ import com.demo.todolist.entity.OrderItem;
 import com.demo.todolist.entity.Payment;
 import com.demo.todolist.entity.Product;
 import com.demo.todolist.entity.ReturnEntry;
-import com.demo.todolist.service.DynamicAppUserService;
 import com.demo.todolist.service.DynamicCommerceService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -33,18 +30,10 @@ import java.util.List;
 @RequestMapping("api/db")
 public class DynamicDbQueryController {
 
-    private final DynamicAppUserService appUserService;
     private final DynamicCommerceService commerceService;
 
-    public DynamicDbQueryController(DynamicAppUserService appUserService,
-                                    DynamicCommerceService commerceService) {
-        this.appUserService = appUserService;
+    public DynamicDbQueryController(DynamicCommerceService commerceService) {
         this.commerceService = commerceService;
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<List<AppUser>> queryUsers(@Valid @RequestBody DynamicAppUserQueryRequest request) {
-        return ResponseEntity.ok(appUserService.queryUsers(request));
     }
 
     @PostMapping("/customers")
