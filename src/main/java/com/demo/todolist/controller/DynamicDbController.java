@@ -28,7 +28,6 @@ public class DynamicDbController {
 
     @PostMapping("/close")
     public ResponseEntity<Void> close(@Valid @RequestBody DynamicCloseRequest request) {
-        registry.ensureExists(request.connectionId());
         registry.remove(request.connectionId());
         return ResponseEntity.noContent().build();
     }

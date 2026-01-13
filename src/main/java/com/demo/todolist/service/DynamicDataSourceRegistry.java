@@ -117,10 +117,11 @@ public class DynamicDataSourceRegistry {
         config.setPassword(request.password());
         config.setDriverClassName(driverClassName(request.dbType()));
         config.setPoolName("dynamic-" + connectionId);
-        config.setMaximumPoolSize(5);
-        config.setMinimumIdle(1);
-        config.setConnectionTimeout(5000);
-        config.setIdleTimeout(300000);
+        config.setMaximumPoolSize(1);
+        config.setMinimumIdle(0);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(30000);
+        config.setMaxLifetime(60000);
         return new HikariDataSource(config);
     }
 
