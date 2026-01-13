@@ -1,36 +1,26 @@
 package com.demo.todolist.controller;
 
-import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
-import com.baomidou.mybatisplus.autoconfigure.MybatisPlusLanguageDriverAutoConfiguration;
-import com.demo.todolist.dto.DynamicAppUserQueryRequest;
-import com.demo.todolist.dto.DynamicCloseRequest;
 import com.demo.todolist.dto.DynamicConnectRequest;
 import com.demo.todolist.dto.DynamicConnectResponse;
-import com.demo.todolist.entity.AppUser;
-import com.demo.todolist.mapper.AppUserMapper;
-import com.demo.todolist.mapper.CategoryMapper;
-import com.demo.todolist.mapper.CustomerMapper;
-import com.demo.todolist.mapper.InventoryMovementMapper;
-import com.demo.todolist.mapper.OrderEntityMapper;
-import com.demo.todolist.mapper.OrderItemMapper;
-import com.demo.todolist.mapper.PaymentMapper;
+import com.demo.todolist.dto.DynamicProductQueryRequest;
+import com.demo.todolist.entity.Product;
 import com.demo.todolist.mapper.ProductMapper;
-import com.demo.todolist.mapper.ReturnEntryMapper;
-import com.demo.todolist.service.DynamicAppUserService;
 import com.demo.todolist.service.DynamicCommerceService;
 import com.demo.todolist.service.DynamicDataSourceRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,9 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {DynamicDbController.class, DynamicDbQueryController.class},
-        excludeAutoConfiguration = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
-@ImportAutoConfiguration(exclude = {MybatisPlusAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
+@WebMvcTest(controllers = {DynamicDbController.class, DynamicDbQueryController.class})
+@TestPropertySource(properties = {"mybatis-plus.enabled=false"})
 class DynamicDbControllerTest {
 
     @Autowired
@@ -56,20 +45,10 @@ class DynamicDbControllerTest {
     private DynamicDataSourceRegistry registry;
 
     @MockBean
-    private DynamicAppUserService appUserService;
-
-    @MockBean
     private DynamicCommerceService commerceService;
 
-    @MockBean private AppUserMapper appUserMapper;
-    @MockBean private CategoryMapper categoryMapper;
-    @MockBean private CustomerMapper customerMapper;
-    @MockBean private ProductMapper productMapper;
-    @MockBean private InventoryMovementMapper inventoryMovementMapper;
-    @MockBean private OrderEntityMapper orderEntityMapper;
-    @MockBean private OrderItemMapper orderItemMapper;
-    @MockBean private PaymentMapper paymentMapper;
-    @MockBean private ReturnEntryMapper returnEntryMapper;
+    @MockBean
+    private ProductMapper productMapper;
 
     private DynamicConnectResponse connectResponse;
 
@@ -121,28 +100,32 @@ class DynamicDbControllerTest {
     }
 
     @Test
-    void users_shouldReturnListFromService() throws Exception {
-        AppUser user = new AppUser();
-        user.setId(1L);
-        user.setUsername("alice");
-        user.setPasswordHash("pwd");
-        user.setIsAdmin(true);
+    void products_shouldReturnListFromService() throws Exception {
+        Product product = new Product();
+        product.setProductId(1L);
+        product.setSku("TEST-001");
+        product.setProductName("Test Product");
+        product.setCategoryId(1L);
+        product.setListPrice(new BigDecimal("999.99"));
+        product.setCostPrice(new BigDecimal("500.00"));
+        product.setIsActive(true);
+        product.setCreatedAt(OffsetDateTime.now());
 
-        when(appUserService.queryUsers(org.mockito.ArgumentMatchers.any(DynamicAppUserQueryRequest.class)))
-                .thenReturn(List.of(user));
+        when(commerceService.queryProducts(org.mockito.ArgumentMatchers.any(DynamicProductQueryRequest.class)))
+                .thenReturn(List.of(product));
 
         String body = """
                 {
                   "connectionId": "conn-123",
-                  "username": "alice",
+                  "productName": "Test",
                   "limit": 10
                 }
                 """;
 
-        mockMvc.perform(post("/api/db/users")
+        mockMvc.perform(post("/api/db/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(user))));
+                .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(product))));
     }
 }

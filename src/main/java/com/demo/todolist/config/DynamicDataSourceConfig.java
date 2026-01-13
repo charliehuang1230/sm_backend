@@ -1,22 +1,29 @@
 package com.demo.todolist.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties(DynamicDataSourceProperties.class)
 public class DynamicDataSourceConfig {
+
+    @Value("${dynamic.datasource.ttl-minutes:30}")
+    private long ttlMinutes;
+
+    public Duration getTtl() {
+        return Duration.ofMinutes(ttlMinutes);
+    }
 
     @Bean
     public DataSource defaultDataSource(DataSourceProperties properties) {

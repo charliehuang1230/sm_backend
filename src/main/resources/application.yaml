@@ -1,25 +1,8 @@
-﻿spring:
-  sql:
-    init:
-      mode: never
-  application:
-    name: todolist
+spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/sm_db
     username: root
     password: 123456
-
-mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
-
-server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
 
 dynamic:
   datasource:

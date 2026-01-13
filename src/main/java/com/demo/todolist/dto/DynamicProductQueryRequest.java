@@ -1,8 +1,7 @@
 package com.demo.todolist.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
@@ -14,6 +13,6 @@ public record DynamicProductQueryRequest(
         Boolean isActive,
         BigDecimal minListPrice,
         BigDecimal maxListPrice,
-        @Min(1) @Max(200) Integer limit
+        @Positive Integer limit
 ) {
 }

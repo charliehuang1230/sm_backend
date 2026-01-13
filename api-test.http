@@ -19,121 +19,59 @@ Content-Type: application/json
   "connectionId": "UUID_FROM_CONNECT"
 }
 
-### Dynamic App Users
-POST http://localhost:8080/api/db/users
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "username": "alice",
-  "isAdmin": true,
-  "limit": 10
-}
-
-### Dynamic Customers
-POST http://localhost:8080/api/db/customers
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "email": "alice@example.com",
-  "fullName": "Alice",
-  "country": "TW",
-  "city": "Taipei",
-  "isVip": true,
-  "signupAfter": "2025-01-01T00:00:00+08:00",
-  "signupBefore": "2025-12-31T23:59:59+08:00",
-  "limit": 50
-}
-
-### Dynamic Categories
-POST http://localhost:8080/api/db/categories
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "categoryName": "3C",
-  "limit": 50
-}
-
-### Dynamic Products
+### Dynamic Products - 查詢所有商品
 POST http://localhost:8080/api/db/products
 Content-Type: application/json
 
 {
   "connectionId": "UUID_FROM_CONNECT",
-  "sku": "SKU-001",
-  "productName": "Phone",
-  "categoryId": 1,
+  "limit": 50
+}
+
+### Dynamic Products - 依 SKU 查詢
+POST http://localhost:8080/api/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "UUID_FROM_CONNECT",
+  "sku": "EL-USB-C-01"
+}
+
+### Dynamic Products - 依商品名稱模糊查詢
+POST http://localhost:8080/api/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "UUID_FROM_CONNECT",
+  "productName": "USB"
+}
+
+### Dynamic Products - 依類別查詢
+POST http://localhost:8080/api/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "UUID_FROM_CONNECT",
+  "categoryId": 1
+}
+
+### Dynamic Products - 查詢啟用商品
+POST http://localhost:8080/api/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "UUID_FROM_CONNECT",
+  "isActive": true
+}
+
+### Dynamic Products - 價格範圍查詢
+POST http://localhost:8080/api/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "UUID_FROM_CONNECT",
+  "minListPrice": 500,
+  "maxListPrice": 1500,
   "isActive": true,
-  "minListPrice": 1000,
-  "maxListPrice": 20000,
-  "limit": 50
-}
-
-### Dynamic Inventory Movements
-POST http://localhost:8080/api/db/inventory-movements
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "productId": 10,
-  "movementType": "IN",
-  "warehouse": "TW-TP",
-  "movedAfter": "2025-01-01T00:00:00+08:00",
-  "movedBefore": "2025-12-31T23:59:59+08:00",
-  "limit": 100
-}
-
-### Dynamic Orders
-POST http://localhost:8080/api/db/orders
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "customerId": 100,
-  "orderStatus": "PAID",
-  "orderChannel": "WEB",
-  "createdAfter": "2025-01-01T00:00:00+08:00",
-  "createdBefore": "2025-12-31T23:59:59+08:00",
-  "limit": 50
-}
-
-### Dynamic Order Items
-POST http://localhost:8080/api/db/order-items
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "orderId": 5001,
-  "productId": 20,
-  "limit": 100
-}
-
-### Dynamic Payments
-POST http://localhost:8080/api/db/payments
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "orderId": 5001,
-  "paymentMethod": "CREDIT_CARD",
-  "paymentStatus": "SUCCESS",
-  "paidAfter": "2025-01-01T00:00:00+08:00",
-  "paidBefore": "2025-12-31T23:59:59+08:00",
-  "limit": 50
-}
-
-### Dynamic Returns
-POST http://localhost:8080/api/db/returns
-Content-Type: application/json
-
-{
-  "connectionId": "UUID_FROM_CONNECT",
-  "orderId": 5001,
-  "productId": 20,
-  "returnStatus": "APPROVED",
-  "requestedAfter": "2025-01-01T00:00:00+08:00",
-  "requestedBefore": "2025-12-31T23:59:59+08:00",
-  "limit": 50
+  "limit": 20
 }

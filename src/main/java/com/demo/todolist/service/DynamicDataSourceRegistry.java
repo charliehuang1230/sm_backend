@@ -1,7 +1,7 @@
 package com.demo.todolist.service;
 
 import com.demo.todolist.config.DynamicDataSourceContext;
-import com.demo.todolist.config.DynamicDataSourceProperties;
+import com.demo.todolist.config.DynamicDataSourceConfig;
 import com.demo.todolist.config.DynamicRoutingDataSource;
 import com.demo.todolist.dto.DbType;
 import com.demo.todolist.dto.DynamicConnectRequest;
@@ -35,10 +35,10 @@ public class DynamicDataSourceRegistry {
 
     public DynamicDataSourceRegistry(DynamicRoutingDataSource routingDataSource,
                                      @Qualifier("defaultDataSource") DataSource defaultDataSource,
-                                     DynamicDataSourceProperties properties) {
+                                     DynamicDataSourceConfig config) {
         this.routingDataSource = routingDataSource;
         this.defaultDataSource = defaultDataSource;
-        this.ttl = Duration.ofMinutes(properties.getTtlMinutes());
+        this.ttl = config.getTtl();
     }
 
     public DynamicConnectResponse connect(DynamicConnectRequest request) {

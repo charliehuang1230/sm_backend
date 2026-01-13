@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Data
-@TableName("test.products")
+@TableName("products")
 public class Product {
     private Long productId;
     private String sku;
