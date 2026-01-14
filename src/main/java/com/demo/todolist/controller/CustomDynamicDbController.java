@@ -1,6 +1,7 @@
 package com.demo.todolist.controller;
 
 import com.demo.todolist.dto.CustomDynamicCloseRequest;
+import com.demo.todolist.dto.CustomDynamicCloseResponse;
 import com.demo.todolist.dto.CustomDynamicConnectRequest;
 import com.demo.todolist.dto.CustomDynamicConnectResponse;
 import com.demo.todolist.service.CustomDynamicDataSourceRegistry;
@@ -27,9 +28,9 @@ public class CustomDynamicDbController {
     }
 
     @PostMapping("/close")
-    public ResponseEntity<Void> close(@Valid @RequestBody CustomDynamicCloseRequest request) {
+    public ResponseEntity<CustomDynamicCloseResponse> close(@Valid @RequestBody CustomDynamicCloseRequest request) {
         registry.ensureExists(request.connectionId());
         registry.remove(request.connectionId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new CustomDynamicCloseResponse("ok", "connection closed"));
     }
 }
