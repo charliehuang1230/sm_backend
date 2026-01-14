@@ -112,7 +112,7 @@ public class CustomDynamicDataSourceRegistry {
 
     private HikariDataSource buildDataSource(String connectionId, CustomDynamicConnectRequest request) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(buildJdbcUrl(request.dbType(), request.host(), request.port(), request.database()));
+        config.setJdbcUrl(buildJdbcUrl(request));
         config.setUsername(request.username());
         config.setPassword(request.password());
         config.setDriverClassName(driverClassName(request.dbType()));
@@ -124,13 +124,21 @@ public class CustomDynamicDataSourceRegistry {
         return new HikariDataSource(config);
     }
 
-    private String buildJdbcUrl(DbType dbType, String host, int port, String database) {
-        return switch (dbType) {
-            case POSTGRES -> "jdbc:postgresql://" + host + ":" + port + "/" + database;
-            case ORACLE -> "jdbc:oracle:thin:@" + host + ":" + port + ":" + database;
-            case MYSQL -> "jdbc:mysql://" + host + ":" + port + "/" + database;
-            case MSSQL -> "jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + database;
+    private String buildJdbcUrl(CustomDynamicConnectRequest request) {
+        return switch (request.dbType()) {
+            case POSTGRES -> "jdbc:postgresql://" + request.host() + ":" + request.port() + "/" + request.database();
+            case ORACLE -> buildOracleJdbcUrl(request);
+            case MYSQL -> "jdbc:mysql://" + request.host() + ":" + request.port() + "/" + request.database();
+            case MSSQL -> "jdbc:sqlserver://" + request.host() + ":" + request.port() + ";databaseName=" + request.database();
         };
+    }
+
+    private String buildOracleJdbcUrl(CustomDynamicConnectRequest request) {
+        String hostPort = request.host() + ":" + request.port();
+        if (Boolean.TRUE.equals(request.useServiceName())) {
+            return "jdbc:oracle:thin:@//" + hostPort + "/" + request.database();
+        }
+        return "jdbc:oracle:thin:@" + hostPort + ":" + request.database();
     }
 
     private String driverClassName(DbType dbType) {
