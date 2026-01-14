@@ -10,6 +10,7 @@ public record CustomDynamicConnectRequest(
         @NotBlank String host,
         @Min(1) @Max(65535) int port,
         @NotBlank String database,
+        Boolean useServiceName,
         @NotBlank String username,
         @NotBlank String password
 ) {
