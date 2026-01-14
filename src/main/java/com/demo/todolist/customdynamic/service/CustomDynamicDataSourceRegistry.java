@@ -1,11 +1,11 @@
-package com.demo.todolist.service;
+package com.demo.todolist.customdynamic.service;
 
-import com.demo.todolist.config.CustomDynamicDataSourceContext;
-import com.demo.todolist.config.CustomDynamicDataSourceProperties;
-import com.demo.todolist.config.CustomDynamicRoutingDataSource;
-import com.demo.todolist.dto.DbType;
-import com.demo.todolist.dto.CustomDynamicConnectRequest;
-import com.demo.todolist.dto.CustomDynamicConnectResponse;
+import com.demo.todolist.customdynamic.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.customdynamic.config.CustomDynamicDataSourceProperties;
+import com.demo.todolist.customdynamic.config.CustomDynamicRoutingDataSource;
+import com.demo.todolist.customdynamic.dto.DbType;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,10 +1,10 @@
-package com.demo.todolist.controller;
+package com.demo.todolist.customdynamic.controller;
 
-import com.demo.todolist.dto.CustomDynamicCloseRequest;
-import com.demo.todolist.dto.CustomDynamicCloseResponse;
-import com.demo.todolist.dto.CustomDynamicConnectRequest;
-import com.demo.todolist.dto.CustomDynamicConnectResponse;
-import com.demo.todolist.service.CustomDynamicDataSourceRegistry;
+import com.demo.todolist.customdynamic.dto.CustomDynamicCloseRequest;
+import com.demo.todolist.customdynamic.dto.CustomDynamicCloseResponse;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
+import com.demo.todolist.customdynamic.service.CustomDynamicDataSourceRegistry;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

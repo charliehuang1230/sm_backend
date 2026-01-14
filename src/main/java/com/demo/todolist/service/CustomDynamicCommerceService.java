@@ -1,8 +1,10 @@
 package com.demo.todolist.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.demo.todolist.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.customdynamic.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.customdynamic.service.CustomDynamicDataSourceRegistry;
 import com.demo.todolist.dto.CustomDynamicCategoryQueryRequest;
 import com.demo.todolist.dto.CustomDynamicCustomerQueryRequest;
 import com.demo.todolist.dto.CustomDynamicInventoryMovementQueryRequest;
@@ -69,30 +71,39 @@ public class CustomDynamicCommerceService {
 
     public List<Customer> queryCustomers(CustomDynamicCustomerQueryRequest request) {
         return withConnection(request.connectionId(), () -> {
-            LambdaQueryWrapper<Customer> query = new LambdaQueryWrapper<>();
+            QueryWrapper<Customer> query = new QueryWrapper<>();
+            query.select(
+                    "customer_id",
+                    "email",
+                    "UTL_I18N.RAW_TO_NCHAR(UTL_RAW.CAST_TO_RAW(full_name), 'xxxx') AS full_name",
+                    "phone",
+                    "country",
+                    "city",
+                    "signup_at",
+                    "is_vip"
+            );
             if (notBlank(request.email())) {
-                query.eq(Customer::getEmail, request.email());
+                query.eq("email", request.email());
             }
             if (notBlank(request.fullName())) {
-                query.like(Customer::getFullName, request.fullName());
+                query.like("full_name", request.fullName());
             }
             if (notBlank(request.country())) {
-                query.eq(Customer::getCountry, request.country());
+                query.eq("country", request.country());
             }
             if (notBlank(request.city())) {
-                query.eq(Customer::getCity, request.city());
+                query.eq("city", request.city());
             }
             if (request.isVip() != null) {
-                query.eq(Customer::getIsVip, request.isVip());
+                query.eq("is_vip", request.isVip());
             }
             if (request.signupAfter() != null) {
-                query.ge(Customer::getSignupAt, request.signupAfter());
+                query.ge("signup_at", request.signupAfter());
             }
             if (request.signupBefore() != null) {
-                query.le(Customer::getSignupAt, request.signupBefore());
+                query.le("signup_at", request.signupBefore());
             }
-            Page<Customer> page = new Page<>(1, limitOrDefault(request.limit()));
-            return customerMapper.selectPage(page, query).getRecords();
+            return customerMapper.selectList(query);
         });
     }
 

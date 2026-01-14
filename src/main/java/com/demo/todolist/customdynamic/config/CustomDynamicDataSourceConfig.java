@@ -1,4 +1,4 @@
-package com.demo.todolist.config;
+package com.demo.todolist.customdynamic.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;

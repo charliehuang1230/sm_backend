@@ -1,4 +1,4 @@
-package com.demo.todolist.config;
+package com.demo.todolist.customdynamic.config;
 
 public final class CustomDynamicDataSourceContext {
     public static final String DEFAULT_KEY = "default";

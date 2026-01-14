@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/db")
+@RequestMapping("api/postgres/db")
 public class CustomDynamicDbQueryController {
 
     private final CustomDynamicCommerceService commerceService;

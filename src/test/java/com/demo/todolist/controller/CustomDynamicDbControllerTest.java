@@ -2,8 +2,8 @@
 
 // import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 // import com.baomidou.mybatisplus.autoconfigure.MybatisPlusLanguageDriverAutoConfiguration;
-// import com.demo.todolist.dto.CustomDynamicConnectRequest;
-// import com.demo.todolist.dto.CustomDynamicConnectResponse;
+// import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
+// import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
 // import com.demo.todolist.mapper.CategoryMapper;
 // import com.demo.todolist.mapper.CustomerMapper;
 // import com.demo.todolist.mapper.InventoryMovementMapper;
@@ -13,7 +13,7 @@
 // import com.demo.todolist.mapper.ProductMapper;
 // import com.demo.todolist.mapper.ReturnEntryMapper;
 // import com.demo.todolist.service.CustomDynamicCommerceService;
-// import com.demo.todolist.service.CustomDynamicDataSourceRegistry;
+// import com.demo.todolist.customdynamic.service.CustomDynamicDataSourceRegistry;
 // import com.fasterxml.jackson.databind.ObjectMapper;
 // import org.junit.jupiter.api.BeforeEach;
 // import org.junit.jupiter.api.Test;

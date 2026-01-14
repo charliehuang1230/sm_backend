@@ -1,4 +1,4 @@
-package com.demo.todolist.dto;
+package com.demo.todolist.customdynamic.dto;
 
 import java.time.Instant;
 

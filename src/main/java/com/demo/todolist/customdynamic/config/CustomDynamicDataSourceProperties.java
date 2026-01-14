@@ -1,4 +1,4 @@
-package com.demo.todolist.config;
+package com.demo.todolist.customdynamic.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
