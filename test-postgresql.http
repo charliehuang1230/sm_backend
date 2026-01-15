@@ -1,0 +1,87 @@
+### 1. 連接到 PostgreSQL 資料庫
+POST http://localhost:8080/api/db/connect
+Content-Type: application/json
+
+{
+  "dbType": "POSTGRES",
+  "host": "158.101.83.87",
+  "port": 5432,
+  "database": "postgres",
+  "username": "wensu",
+  "password": "86745810"
+}
+
+### 2. 查詢 test_dynamic.products 中的所有商品
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}"
+}
+
+### 3. 依據 SKU 查詢特定商品
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "sku": "SKU-001"
+}
+
+### 4. 依據產品名稱模糊查詢
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "productName": "iPhone"
+}
+
+### 5. 依據類別查詢
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "categoryId": 200
+}
+
+### 6. 依據價格範圍查詢
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "minListPrice": 20000.00,
+  "maxListPrice": 50000.00
+}
+
+### 7. 只查詢有效商品（is_active = true）
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "isActive": true,
+  "limit": 5
+}
+
+### 8. 複合查詢（類別 + 價格範圍 + 有效狀態）
+POST http://localhost:8080/api/postgres/db/products
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}",
+  "categoryId": 200,
+  "minListPrice": 25000.00,
+  "maxListPrice": 45000.00,
+  "isActive": true
+}
+
+### 9. 關閉資料庫連線
+POST http://localhost:8080/api/db/close
+Content-Type: application/json
+
+{
+  "connectionId": "{{connectionId}}"
+}
