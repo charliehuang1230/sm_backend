@@ -117,11 +117,22 @@ public class CustomDynamicDataSourceRegistry {
         config.setPassword(request.password());
         config.setDriverClassName(driverClassName(request.dbType()));
         config.setPoolName("dynamic-" + connectionId);
+
+        // 連接池大小配置（優化：短期連接）
         config.setMaximumPoolSize(1);
         config.setMinimumIdle(0);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(30000);
-        config.setMaxLifetime(60000);
+
+        // 超時配置
+        config.setConnectionTimeout(30000);  // 連接超時 30 秒
+        config.setIdleTimeout(30000);        // 空閒超時 30 秒
+        config.setMaxLifetime(60000);        // 最大生命週期 60 秒
+
+        // 連接洩漏檢測（超過 60 秒未關閉的連接會被記錄）
+        config.setLeakDetectionThreshold(60000);
+
+        // 連接測試查詢（可選，用於驗證連接有效性）
+        // config.setConnectionTestQuery("SELECT 1");
+
         return new HikariDataSource(config);
     }
 
