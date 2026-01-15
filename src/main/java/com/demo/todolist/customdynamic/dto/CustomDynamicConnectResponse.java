@@ -1,8 +1,8 @@
-package com.demo.todolist.dto;
+package com.demo.todolist.customdynamic.dto;
 
 import java.time.Instant;
 
-public record DynamicConnectResponse(
+public record CustomDynamicConnectResponse(
         String connectionId,
         Instant expiresAt
 ) {

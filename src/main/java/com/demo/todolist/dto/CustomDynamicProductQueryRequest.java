@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record DynamicProductQueryRequest(
+public record CustomDynamicProductQueryRequest(
         @NotBlank String connectionId,
         String sku,
         String productName,

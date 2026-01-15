@@ -1,11 +1,11 @@
-package com.demo.todolist.service;
+package com.demo.todolist.customdynamic.service;
 
-import com.demo.todolist.config.DynamicDataSourceContext;
-import com.demo.todolist.config.DynamicDataSourceConfig;
-import com.demo.todolist.config.DynamicRoutingDataSource;
-import com.demo.todolist.dto.DbType;
-import com.demo.todolist.dto.DynamicConnectRequest;
-import com.demo.todolist.dto.DynamicConnectResponse;
+import com.demo.todolist.customdynamic.config.CustomDynamicDataSourceContext;
+import com.demo.todolist.customdynamic.config.CustomDynamicDataSourceProperties;
+import com.demo.todolist.customdynamic.config.CustomDynamicRoutingDataSource;
+import com.demo.todolist.customdynamic.dto.DbType;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,22 +26,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class DynamicDataSourceRegistry {
+public class CustomDynamicDataSourceRegistry {
 
-    private final DynamicRoutingDataSource routingDataSource;
+    private final CustomDynamicRoutingDataSource routingDataSource;
     private final DataSource defaultDataSource;
     private final Duration ttl;
     private final Map<String, DataSourceHolder> dataSources = new ConcurrentHashMap<>();
 
-    public DynamicDataSourceRegistry(DynamicRoutingDataSource routingDataSource,
+    public CustomDynamicDataSourceRegistry(CustomDynamicRoutingDataSource routingDataSource,
                                      @Qualifier("defaultDataSource") DataSource defaultDataSource,
-                                     DynamicDataSourceConfig config) {
+                                     CustomDynamicDataSourceProperties properties) {
         this.routingDataSource = routingDataSource;
         this.defaultDataSource = defaultDataSource;
-        this.ttl = config.getTtl();
+        this.ttl = Duration.ofMinutes(properties.getTtlMinutes());
     }
 
-    public DynamicConnectResponse connect(DynamicConnectRequest request) {
+    public CustomDynamicConnectResponse connect(CustomDynamicConnectRequest request) {
         String connectionId = UUID.randomUUID().toString();
         HikariDataSource dataSource;
         try {
@@ -61,7 +61,7 @@ public class DynamicDataSourceRegistry {
         dataSources.put(connectionId, new DataSourceHolder(dataSource, now, now));
         refreshRoutingDataSources();
 
-        return new DynamicConnectResponse(connectionId, now.plus(ttl));
+        return new CustomDynamicConnectResponse(connectionId, now.plus(ttl));
     }
 
     public void touch(String connectionId) {
@@ -102,7 +102,7 @@ public class DynamicDataSourceRegistry {
 
     private void refreshRoutingDataSources() {
         Map<Object, Object> targets = new HashMap<>();
-        targets.put(DynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
+        targets.put(CustomDynamicDataSourceContext.DEFAULT_KEY, defaultDataSource);
         for (Map.Entry<String, DataSourceHolder> entry : dataSources.entrySet()) {
             targets.put(entry.getKey(), entry.getValue().getDataSource());
         }
@@ -110,9 +110,9 @@ public class DynamicDataSourceRegistry {
         routingDataSource.afterPropertiesSet();
     }
 
-    private HikariDataSource buildDataSource(String connectionId, DynamicConnectRequest request) {
+    private HikariDataSource buildDataSource(String connectionId, CustomDynamicConnectRequest request) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(buildJdbcUrl(request.dbType(), request.host(), request.port(), request.database()));
+        config.setJdbcUrl(buildJdbcUrl(request));
         config.setUsername(request.username());
         config.setPassword(request.password());
         config.setDriverClassName(driverClassName(request.dbType()));
@@ -125,13 +125,21 @@ public class DynamicDataSourceRegistry {
         return new HikariDataSource(config);
     }
 
-    private String buildJdbcUrl(DbType dbType, String host, int port, String database) {
-        return switch (dbType) {
-            case POSTGRES -> "jdbc:postgresql://" + host + ":" + port + "/" + database;
-            case ORACLE -> "jdbc:oracle:thin:@" + host + ":" + port + ":" + database;
-            case MYSQL -> "jdbc:mysql://" + host + ":" + port + "/" + database;
-            case MSSQL -> "jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + database;
+    private String buildJdbcUrl(CustomDynamicConnectRequest request) {
+        return switch (request.dbType()) {
+            case POSTGRES -> "jdbc:postgresql://" + request.host() + ":" + request.port() + "/" + request.database();
+            case ORACLE -> buildOracleJdbcUrl(request);
+            case MYSQL -> "jdbc:mysql://" + request.host() + ":" + request.port() + "/" + request.database();
+            case MSSQL -> "jdbc:sqlserver://" + request.host() + ":" + request.port() + ";databaseName=" + request.database();
         };
+    }
+
+    private String buildOracleJdbcUrl(CustomDynamicConnectRequest request) {
+        String hostPort = request.host() + ":" + request.port();
+        if (Boolean.TRUE.equals(request.useServiceName())) {
+            return "jdbc:oracle:thin:@//" + hostPort + "/" + request.database();
+        }
+        return "jdbc:oracle:thin:@" + hostPort + ":" + request.database();
     }
 
     private String driverClassName(DbType dbType) {

@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.demo.todolist.mapper")
+@MapperScan("com.demo.todolist.*")
 public class TodolistApplication {
 
     public static void main(String[] args) {

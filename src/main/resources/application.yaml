@@ -1,11 +1,26 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/sm_db
-    username: root
-    password: 123456
+  sql:
+    init:
+      mode: never
+  application:
+    name: todolist
+  # datasource:
+  #   dynamic:
+  #     primary: master
+  #     strict: false
+  #     datasource: {}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 dynamic:
   datasource:
     ttl-minutes: 30
-
-
