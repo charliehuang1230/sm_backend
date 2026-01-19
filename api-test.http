@@ -1,23 +1,14 @@
 ### Dynamic DB Connect
 POST http://localhost:8080/api/db/connect
-Content-Type: application/json
+Content-Type: multipart/form-data
 
-{
-  "dbType": "POSTGRES",
-  "host": "localhost",
-  "port": 5432,
-  "database": "ssm_test",
-  "username": "demo",
-  "password": "secret"
-}
+databaseName=reporting&username=demo&password=secret
 
 ### Dynamic DB Close
 POST http://localhost:8080/api/db/close
-Content-Type: application/json
+Content-Type: multipart/form-data
 
-{
-  "connectionId": "UUID_FROM_CONNECT"
-}
+connectionId=UUID_FROM_CONNECT
 
 ### Dynamic App Users
 POST http://localhost:8080/api/db/users
