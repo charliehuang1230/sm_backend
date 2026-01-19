@@ -1,17 +1,22 @@
 package com.demo.todolist.customdynamic.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CustomDynamicConnectRequest(
-        @NotNull DbType dbType,
-        @NotBlank String host,
-        @Min(1) @Max(65535) int port,
-        @NotBlank String database,
-        Boolean useServiceName,
-        @NotBlank String username,
-        @NotBlank String password
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CustomDynamicConnectRequest {
+    @NotBlank
+    private String databaseName;
+
+    @NotBlank
+    private String username;
+
+    @NotBlank
+    private String password;
 }
