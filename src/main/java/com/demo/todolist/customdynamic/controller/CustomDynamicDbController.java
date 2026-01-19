@@ -4,13 +4,14 @@ import com.demo.todolist.customdynamic.dto.CustomDynamicCloseResponse;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
 import com.demo.todolist.customdynamic.service.CustomDynamicDataSourceRegistry;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/db")
@@ -23,18 +24,15 @@ public class CustomDynamicDbController {
         this.registry = registry;
     }
 
-    @PostMapping("/connect")
-    public ResponseEntity<CustomDynamicConnectResponse> connect(@RequestParam @NotBlank String databaseName,
-                                                                @RequestParam @NotBlank String username,
-                                                                @RequestParam @NotBlank String password) {
-        CustomDynamicConnectRequest request = new CustomDynamicConnectRequest(databaseName, username, password);
+    @PostMapping(value = "/connect", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CustomDynamicConnectResponse> connect(@Valid @ModelAttribute CustomDynamicConnectRequest request) {
         return ResponseEntity.ok(registry.connect(request));
     }
 
-    @PostMapping("/close")
-    public ResponseEntity<CustomDynamicCloseResponse> close(@RequestParam @NotBlank String connectionId) {
-        registry.ensureExists(connectionId);
-        registry.remove(connectionId);
+    @PostMapping(value = "/close", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CustomDynamicCloseResponse> close(@Valid @ModelAttribute CustomDynamicCloseRequest request) {
+        registry.ensureExists(request.getConnectionId());
+        registry.remove(request.getConnectionId());
         return ResponseEntity.ok(new CustomDynamicCloseResponse("ok", "connection closed"));
     }
 }

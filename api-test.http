@@ -1,8 +1,15 @@
 ### Dynamic DB Connect
-POST http://localhost:8080/api/db/connect?databaseName=reporting&username=demo&password=secret
+POST http://localhost:8080/api/db/connect
+Content-Type: multipart/form-data
+
+databaseName=reporting&username=demo&password=secret
 
 ### Dynamic DB Close
-POST http://localhost:8080/api/db/close?connectionId=UUID_FROM_CONNECT
+POST http://localhost:8080/api/db/close
+Content-Type: multipart/form-data
+
+connectionId=UUID_FROM_CONNECT
+
 
 ### Dynamic App Users
 POST http://localhost:8080/api/db/users
