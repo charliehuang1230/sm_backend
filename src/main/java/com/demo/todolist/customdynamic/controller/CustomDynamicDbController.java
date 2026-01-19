@@ -5,6 +5,7 @@ import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
 import com.demo.todolist.customdynamic.service.CustomDynamicDataSourceRegistry;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,12 +24,12 @@ public class CustomDynamicDbController {
         this.registry = registry;
     }
 
-    @PostMapping("/connect")
+    @PostMapping(value = "/connect", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomDynamicConnectResponse> connect(@Valid @ModelAttribute CustomDynamicConnectRequest request) {
         return ResponseEntity.ok(registry.connect(request));
     }
 
-    @PostMapping("/close")
+    @PostMapping(value = "/close", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomDynamicCloseResponse> close(@Valid @ModelAttribute CustomDynamicCloseRequest request) {
         registry.ensureExists(request.getConnectionId());
         registry.remove(request.getConnectionId());
