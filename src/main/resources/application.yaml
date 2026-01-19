@@ -24,5 +24,17 @@ server:
 dynamic:
   datasource:
     ttl-minutes: 30
-
+    databases:
+      reporting:
+        db-type: POSTGRES
+        host: localhost
+        port: 5432
+        database: reporting
+        use-service-name: false
+      oracle-legacy:
+        db-type: ORACLE
+        host: localhost
+        port: 1521
+        database: orclpdb1
+        use-service-name: true
 

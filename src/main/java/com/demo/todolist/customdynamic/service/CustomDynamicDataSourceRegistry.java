@@ -31,6 +31,7 @@ public class CustomDynamicDataSourceRegistry {
     private final CustomDynamicRoutingDataSource routingDataSource;
     private final DataSource defaultDataSource;
     private final Duration ttl;
+    private final CustomDynamicDataSourceProperties properties;
     private final Map<String, DataSourceHolder> dataSources = new ConcurrentHashMap<>();
 
     public CustomDynamicDataSourceRegistry(CustomDynamicRoutingDataSource routingDataSource,
@@ -39,6 +40,7 @@ public class CustomDynamicDataSourceRegistry {
         this.routingDataSource = routingDataSource;
         this.defaultDataSource = defaultDataSource;
         this.ttl = Duration.ofMinutes(properties.getTtlMinutes());
+        this.properties = properties;
     }
 
     public CustomDynamicConnectResponse connect(CustomDynamicConnectRequest request) {
@@ -111,11 +113,12 @@ public class CustomDynamicDataSourceRegistry {
     }
 
     private HikariDataSource buildDataSource(String connectionId, CustomDynamicConnectRequest request) {
+        CustomDynamicDataSourceProperties.DatabaseConfig databaseConfig = getDatabaseConfig(request);
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(buildJdbcUrl(request));
-        config.setUsername(request.username());
-        config.setPassword(request.password());
-        config.setDriverClassName(driverClassName(request.dbType()));
+        config.setJdbcUrl(buildJdbcUrl(databaseConfig));
+        config.setUsername(request.getUsername());
+        config.setPassword(request.getPassword());
+        config.setDriverClassName(driverClassName(databaseConfig.getDbType()));
         config.setPoolName("dynamic-" + connectionId);
         config.setMaximumPoolSize(5);
         config.setMinimumIdle(1);
@@ -124,21 +127,24 @@ public class CustomDynamicDataSourceRegistry {
         return new HikariDataSource(config);
     }
 
-    private String buildJdbcUrl(CustomDynamicConnectRequest request) {
-        return switch (request.dbType()) {
-            case POSTGRES -> "jdbc:postgresql://" + request.host() + ":" + request.port() + "/" + request.database();
-            case ORACLE -> buildOracleJdbcUrl(request);
-            case MYSQL -> "jdbc:mysql://" + request.host() + ":" + request.port() + "/" + request.database();
-            case MSSQL -> "jdbc:sqlserver://" + request.host() + ":" + request.port() + ";databaseName=" + request.database();
+    private String buildJdbcUrl(CustomDynamicDataSourceProperties.DatabaseConfig databaseConfig) {
+        return switch (databaseConfig.getDbType()) {
+            case POSTGRES -> "jdbc:postgresql://" + databaseConfig.getHost() + ":" + databaseConfig.getPort()
+                    + "/" + databaseConfig.getDatabase();
+            case ORACLE -> buildOracleJdbcUrl(databaseConfig);
+            case MYSQL -> "jdbc:mysql://" + databaseConfig.getHost() + ":" + databaseConfig.getPort()
+                    + "/" + databaseConfig.getDatabase();
+            case MSSQL -> "jdbc:sqlserver://" + databaseConfig.getHost() + ":" + databaseConfig.getPort()
+                    + ";databaseName=" + databaseConfig.getDatabase();
         };
     }
 
-    private String buildOracleJdbcUrl(CustomDynamicConnectRequest request) {
-        String hostPort = request.host() + ":" + request.port();
-        if (Boolean.TRUE.equals(request.useServiceName())) {
-            return "jdbc:oracle:thin:@//" + hostPort + "/" + request.database();
+    private String buildOracleJdbcUrl(CustomDynamicDataSourceProperties.DatabaseConfig databaseConfig) {
+        String hostPort = databaseConfig.getHost() + ":" + databaseConfig.getPort();
+        if (Boolean.TRUE.equals(databaseConfig.getUseServiceName())) {
+            return "jdbc:oracle:thin:@//" + hostPort + "/" + databaseConfig.getDatabase();
         }
-        return "jdbc:oracle:thin:@" + hostPort + ":" + request.database();
+        return "jdbc:oracle:thin:@" + hostPort + ":" + databaseConfig.getDatabase();
     }
 
     private String driverClassName(DbType dbType) {
@@ -148,6 +154,16 @@ public class CustomDynamicDataSourceRegistry {
             case MYSQL -> "com.mysql.cj.jdbc.Driver";
             case MSSQL -> "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         };
+    }
+
+    private CustomDynamicDataSourceProperties.DatabaseConfig getDatabaseConfig(CustomDynamicConnectRequest request) {
+        String databaseName = request.getDatabaseName();
+        CustomDynamicDataSourceProperties.DatabaseConfig config = properties.getDatabases().get(databaseName);
+        if (config == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "unknown database name: " + databaseName);
+        }
+        return config;
     }
 
     private static class DataSourceHolder {

@@ -1,8 +1,16 @@
 package com.demo.todolist.customdynamic.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CustomDynamicCloseRequest(
-        @NotBlank String connectionId
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CustomDynamicCloseRequest {
+    @NotBlank
+    private String connectionId;
 }
