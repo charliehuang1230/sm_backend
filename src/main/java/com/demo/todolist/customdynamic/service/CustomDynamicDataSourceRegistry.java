@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,22 @@ public class CustomDynamicDataSourceRegistry {
         if (!dataSources.containsKey(connectionId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "connectionId not found");
         }
+    }
+
+    public List<String> getConnectionIds() {
+        List<String> ids = new ArrayList<>(dataSources.keySet());
+        Collections.sort(ids);
+        return ids;
+    }
+
+    public int removeAll() {
+        List<DataSourceHolder> holders = new ArrayList<>(dataSources.values());
+        dataSources.clear();
+        for (DataSourceHolder holder : holders) {
+            holder.close();
+        }
+        refreshRoutingDataSources();
+        return holders.size();
     }
 
     @Scheduled(fixedDelay = 60000)
