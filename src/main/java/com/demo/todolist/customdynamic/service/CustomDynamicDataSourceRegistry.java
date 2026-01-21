@@ -6,6 +6,7 @@ import com.demo.todolist.customdynamic.config.CustomDynamicRoutingDataSource;
 import com.demo.todolist.customdynamic.dto.DbType;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectionInfo;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +20,6 @@ import java.sql.Connection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class CustomDynamicDataSourceRegistry {
         }
 
         Instant now = Instant.now();
-        dataSources.put(connectionId, new DataSourceHolder(dataSource, now, now));
+        dataSources.put(connectionId, new DataSourceHolder(dataSource, request.getDatabaseName(), now, now));
         refreshRoutingDataSources();
 
         return new CustomDynamicConnectResponse(connectionId, now.plus(ttl));
@@ -81,10 +81,16 @@ public class CustomDynamicDataSourceRegistry {
         }
     }
 
-    public List<String> getConnectionIds() {
-        List<String> ids = new ArrayList<>(dataSources.keySet());
-        Collections.sort(ids);
-        return ids;
+    public List<CustomDynamicConnectionInfo> getConnectionInfos() {
+        List<CustomDynamicConnectionInfo> infos = new ArrayList<>();
+        for (Map.Entry<String, DataSourceHolder> entry : dataSources.entrySet()) {
+            infos.add(CustomDynamicConnectionInfo.builder()
+                    .connectionId(entry.getKey())
+                    .databaseName(entry.getValue().getDatabaseName())
+                    .build());
+        }
+        infos.sort((left, right) -> left.getConnectionId().compareTo(right.getConnectionId()));
+        return infos;
     }
 
     public int removeAll() {
@@ -185,17 +191,23 @@ public class CustomDynamicDataSourceRegistry {
 
     private static class DataSourceHolder {
         private final DataSource dataSource;
+        private final String databaseName;
         private final Instant createdAt;
         private volatile Instant lastAccess;
 
-        DataSourceHolder(DataSource dataSource, Instant createdAt, Instant lastAccess) {
+        DataSourceHolder(DataSource dataSource, String databaseName, Instant createdAt, Instant lastAccess) {
             this.dataSource = dataSource;
+            this.databaseName = databaseName;
             this.createdAt = createdAt;
             this.lastAccess = lastAccess;
         }
 
         public DataSource getDataSource() {
             return dataSource;
+        }
+
+        public String getDatabaseName() {
+            return databaseName;
         }
 
         public Instant getCreatedAt() {
@@ -216,4 +228,5 @@ public class CustomDynamicDataSourceRegistry {
             }
         }
     }
+
 }

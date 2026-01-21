@@ -1,6 +1,5 @@
 package com.demo.todolist.customdynamic.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomDynamicConnectionListResponse {
-    private List<CustomDynamicConnectionInfo> connections;
-    private int count;
+public class CustomDynamicConnectionInfo {
+    private String connectionId;
+    private String databaseName;
 }

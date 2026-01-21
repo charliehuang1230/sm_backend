@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.validation.Valid;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectionInfo;
 import java.util.List;
 
 @RestController
@@ -42,8 +43,8 @@ public class CustomDynamicDbController {
 
     @GetMapping("/connections")
     public ResponseEntity<CustomDynamicConnectionListResponse> listConnections() {
-        List<String> connectionIds = registry.getConnectionIds();
-        return ResponseEntity.ok(new CustomDynamicConnectionListResponse(connectionIds, connectionIds.size()));
+        List<CustomDynamicConnectionInfo> connections = registry.getConnectionInfos();
+        return ResponseEntity.ok(new CustomDynamicConnectionListResponse(connections, connections.size()));
     }
 
     @PostMapping("/close-all")
