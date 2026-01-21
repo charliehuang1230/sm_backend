@@ -24,6 +24,10 @@ server:
 dynamic:
   datasource:
     ttl-minutes: 30
+    maximum-pool-size: 10
+    minimum-idle: 1
+    connection-timeout-ms: 5000
+    idle-timeout-ms: 300000
     databases:
       reporting:
         db-type: POSTGRES
@@ -37,4 +41,3 @@ dynamic:
         port: 1521
         database: orclpdb1
         use-service-name: true
-

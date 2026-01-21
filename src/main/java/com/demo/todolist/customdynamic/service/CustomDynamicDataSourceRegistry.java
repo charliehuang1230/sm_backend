@@ -143,10 +143,10 @@ public class CustomDynamicDataSourceRegistry {
         config.setPassword(request.getPassword());
         config.setDriverClassName(driverClassName(databaseConfig.getDbType()));
         config.setPoolName("dynamic-" + connectionId);
-        config.setMaximumPoolSize(5);
-        config.setMinimumIdle(1);
-        config.setConnectionTimeout(5000);
-        config.setIdleTimeout(300000);
+        config.setMaximumPoolSize(properties.getMaximumPoolSize());
+        config.setMinimumIdle(properties.getMinimumIdle());
+        config.setConnectionTimeout(properties.getConnectionTimeoutMs());
+        config.setIdleTimeout(properties.getIdleTimeoutMs());
         return new HikariDataSource(config);
     }
 
