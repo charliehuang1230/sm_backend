@@ -8,10 +8,6 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "dynamic.datasource")
 public class CustomDynamicDataSourceProperties {
     private long ttlMinutes = 30;
-    private int maximumPoolSize = 10;
-    private int minimumIdle = 1;
-    private long connectionTimeoutMs = 5000;
-    private long idleTimeoutMs = 300000;
     private Map<String, DatabaseConfig> databases = new HashMap<>();
 
     public long getTtlMinutes() {
@@ -28,38 +24,6 @@ public class CustomDynamicDataSourceProperties {
 
     public void setDatabases(Map<String, DatabaseConfig> databases) {
         this.databases = databases;
-    }
-
-    public int getMaximumPoolSize() {
-        return maximumPoolSize;
-    }
-
-    public void setMaximumPoolSize(int maximumPoolSize) {
-        this.maximumPoolSize = maximumPoolSize;
-    }
-
-    public int getMinimumIdle() {
-        return minimumIdle;
-    }
-
-    public void setMinimumIdle(int minimumIdle) {
-        this.minimumIdle = minimumIdle;
-    }
-
-    public long getConnectionTimeoutMs() {
-        return connectionTimeoutMs;
-    }
-
-    public void setConnectionTimeoutMs(long connectionTimeoutMs) {
-        this.connectionTimeoutMs = connectionTimeoutMs;
-    }
-
-    public long getIdleTimeoutMs() {
-        return idleTimeoutMs;
-    }
-
-    public void setIdleTimeoutMs(long idleTimeoutMs) {
-        this.idleTimeoutMs = idleTimeoutMs;
     }
 
     public static class DatabaseConfig {
