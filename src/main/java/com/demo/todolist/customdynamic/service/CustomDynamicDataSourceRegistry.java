@@ -6,6 +6,7 @@ import com.demo.todolist.customdynamic.config.CustomDynamicRoutingDataSource;
 import com.demo.todolist.customdynamic.dto.DbType;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectRequest;
 import com.demo.todolist.customdynamic.dto.CustomDynamicConnectResponse;
+import com.demo.todolist.customdynamic.dto.CustomDynamicConnectionInfo;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,7 +61,7 @@ public class CustomDynamicDataSourceRegistry {
         }
 
         Instant now = Instant.now();
-        dataSources.put(connectionId, new DataSourceHolder(dataSource, now, now));
+        dataSources.put(connectionId, new DataSourceHolder(dataSource, request.getDatabaseName(), now, now));
         refreshRoutingDataSources();
 
         return new CustomDynamicConnectResponse(connectionId, now.plus(ttl));
@@ -78,6 +79,28 @@ public class CustomDynamicDataSourceRegistry {
         if (!dataSources.containsKey(connectionId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "connectionId not found");
         }
+    }
+
+    public List<CustomDynamicConnectionInfo> getConnectionInfos() {
+        List<CustomDynamicConnectionInfo> infos = new ArrayList<>();
+        for (Map.Entry<String, DataSourceHolder> entry : dataSources.entrySet()) {
+            infos.add(CustomDynamicConnectionInfo.builder()
+                    .connectionId(entry.getKey())
+                    .databaseName(entry.getValue().getDatabaseName())
+                    .build());
+        }
+        infos.sort((left, right) -> left.getConnectionId().compareTo(right.getConnectionId()));
+        return infos;
+    }
+
+    public int removeAll() {
+        List<DataSourceHolder> holders = new ArrayList<>(dataSources.values());
+        dataSources.clear();
+        for (DataSourceHolder holder : holders) {
+            holder.close();
+        }
+        refreshRoutingDataSources();
+        return holders.size();
     }
 
     @Scheduled(fixedDelay = 60000)
@@ -120,10 +143,6 @@ public class CustomDynamicDataSourceRegistry {
         config.setPassword(request.getPassword());
         config.setDriverClassName(driverClassName(databaseConfig.getDbType()));
         config.setPoolName("dynamic-" + connectionId);
-        config.setMaximumPoolSize(5);
-        config.setMinimumIdle(1);
-        config.setConnectionTimeout(5000);
-        config.setIdleTimeout(300000);
         return new HikariDataSource(config);
     }
 
@@ -168,17 +187,23 @@ public class CustomDynamicDataSourceRegistry {
 
     private static class DataSourceHolder {
         private final DataSource dataSource;
+        private final String databaseName;
         private final Instant createdAt;
         private volatile Instant lastAccess;
 
-        DataSourceHolder(DataSource dataSource, Instant createdAt, Instant lastAccess) {
+        DataSourceHolder(DataSource dataSource, String databaseName, Instant createdAt, Instant lastAccess) {
             this.dataSource = dataSource;
+            this.databaseName = databaseName;
             this.createdAt = createdAt;
             this.lastAccess = lastAccess;
         }
 
         public DataSource getDataSource() {
             return dataSource;
+        }
+
+        public String getDatabaseName() {
+            return databaseName;
         }
 
         public Instant getCreatedAt() {
@@ -199,4 +224,5 @@ public class CustomDynamicDataSourceRegistry {
             }
         }
     }
+
 }

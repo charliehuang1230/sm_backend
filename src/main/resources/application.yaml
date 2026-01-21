@@ -37,4 +37,3 @@ dynamic:
         port: 1521
         database: orclpdb1
         use-service-name: true
-
